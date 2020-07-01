@@ -5,41 +5,47 @@ using UnityEngine;
 namespace SuperSonic.VideoPlayer
 {
     
-    public class CrossPromotionVideoPlayer : MonoBehaviour, IVideoPlayer
-    
+    public class CrossPromotionVideoPlayer : MonoBehaviour
     {
 
         [SerializeField] private int InstanceId;
         [SerializeField] private bool Loop;
-        
-        
+
+        private IVideoPlayer _videoPlayer;
+        private int _currentTrackIndex ;
         public List<IVideoPlayerTrack> VideoPlayerTracks = new List<IVideoPlayerTrack>();
 
-        public void Init(List<IVideoPlayerTrack> videoPlayerTracks)
+        public void Init(IVideoPlayer videoPlayer, List<IVideoPlayerTrack> videoPlayerTracks)
         {
+            _videoPlayer = videoPlayer;
+        }
+
+
+        public void Play()
+        {
+            _videoPlayer.Next();
+        }
+
+
+        private void Next()
+        {
+           
             
         }
 
-
-
-        public void Next()
+        private void Previous()
         {
-            Debug.Log("Play Next Track");
+            _videoPlayer.Previous();
         }
 
-        public void Previous()
+        private void Pause()
         {
-            Debug.Log("Play Previous Track");
+            _videoPlayer.Pause();
         }
 
-        public void Pause()
+        private void Resume()
         {
-            Debug.Log("Pause Track");
-        }
-
-        public void Resume()
-        {
-            Debug.Log("Resume Track");
+            _videoPlayer.Resume();
         }
     }
 }
