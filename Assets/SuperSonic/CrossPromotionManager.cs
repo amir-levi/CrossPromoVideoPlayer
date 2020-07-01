@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SuperSonic
 {
-    public class CrossPromoManager : MonoBehaviour
+    public class CrossPromotionManager : MonoBehaviour
     {
         
     }

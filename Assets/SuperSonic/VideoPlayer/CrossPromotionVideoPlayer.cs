@@ -5,7 +5,8 @@ using UnityEngine;
 namespace SuperSonic.VideoPlayer
 {
     
-    public class CrossPromoVideoPlayer : MonoBehaviour, IVideoPlayer
+    public class CrossPromotionVideoPlayer : MonoBehaviour, IVideoPlayer
+    
     {
 
         [SerializeField] private int InstanceId;
