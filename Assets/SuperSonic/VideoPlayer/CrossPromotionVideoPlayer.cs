@@ -20,32 +20,9 @@ namespace SuperSonic.VideoPlayer
             _videoPlayer = videoPlayer;
         }
 
-
         public void Play()
         {
             _videoPlayer.Next();
-        }
-
-
-        private void Next()
-        {
-           
-            
-        }
-
-        private void Previous()
-        {
-            _videoPlayer.Previous();
-        }
-
-        private void Pause()
-        {
-            _videoPlayer.Pause();
-        }
-
-        private void Resume()
-        {
-            _videoPlayer.Resume();
         }
     }
 }
