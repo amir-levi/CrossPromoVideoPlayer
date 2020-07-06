@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using SuperSonic.Models;
+using CrossPromo.Models;
 using UnityEngine;
-using UnityEngine.Networking;
 
-namespace SuperSonic.Networking
+namespace CrossPromo.Networking
 {
     public static class CrossPromotionVideoPlayerWebRequest
     {
