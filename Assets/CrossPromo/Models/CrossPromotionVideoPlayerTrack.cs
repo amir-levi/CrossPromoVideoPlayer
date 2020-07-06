@@ -1,6 +1,6 @@
 using System;
 
-namespace SuperSonic.Models
+namespace CrossPromo.Models
 {
     [Serializable]
     public class CrossPromotionVideoPlayerTrack
