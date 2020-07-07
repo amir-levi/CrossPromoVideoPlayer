@@ -1,17 +1,17 @@
+using System;
 using System.Collections.Generic;
 using CrossPromo.Models;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CrossPromo.VideoPlayer.Players
 {
-    public abstract class CrossPromotionVideoPlayer : MonoBehaviour,IVideoPlayer
+    public abstract class CrossPromotionVideoPlayer : MonoBehaviour
     {
-        [SerializeField]protected int CurrentPlayedTrackIndex;
-        [SerializeField]protected List<CrossPromotionVideoPlayerTrack> VideoPlayerTracks = new List<CrossPromotionVideoPlayerTrack>();
+        public Action OnNextVideoTrackReady;
+        public Action OnPreviousVideoTrackReady;
+        public Action<CrossPromotionVideoPlayerTrack> OnVideoClicked;
 
-
-        public abstract void Init(List<CrossPromotionVideoPlayerTrack> videoPlayerTracks,RawImage screen);
+        public abstract void Init(List<CrossPromotionVideoPlayerTrack> videoPlayerTracks,VideoPlayerScreen screen);
         public abstract void Next();
         public abstract void Previous();
         public abstract void Pause();
