@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using CrossPromo.Networking;
 using CrossPromo.Views;
 using UnityEngine;
@@ -18,16 +19,35 @@ namespace CrossPromo.Controllers
                 var clickUrl = track.ClickUrl;
             
                 Debug.Log($"instanceId: {instanceId} trackingUrl: {trackingUrl}  clickUrl: {clickUrl} ");
+                
+                SendCrossPromoRequest(instanceId,trackingUrl,clickUrl);
             };
         }
 
-       
 
+        private async void SendCrossPromoRequest(int instanceId, string trackingUrl,  string clickUrl)
+        {
+            var success = await CrossPromoWebOperations.SendRequest(trackingUrl,instanceId,
+            message =>
+            {
+                Debug.LogError(message);
+            });
+            
+            
+            if(success)
+                Application.OpenURL(clickUrl);
+        }
 
         public async void CrossPromotionVideoPlayerView(Type videoPlayerType,string serverUrl)
         {
-            var tracks = await CrossPromotionVideoPlayerWebRequest.FetchVideoTracksAsync(serverUrl);
-            _videoPlayerView.Init(videoPlayerType,tracks);
+
+           var playList = await CrossPromoWebOperations.FetchVideoPlaylist(serverUrl,
+            message =>
+            {
+                Debug.LogError(message);
+            });
+            
+           _videoPlayerView.Init(videoPlayerType,playList);
         }
 
     
