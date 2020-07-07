@@ -12,9 +12,11 @@ namespace CrossPromo.VideoPlayer
         private UnityEngine.Video.VideoPlayer _videoPlayer;
         private AudioSource _audioSource;
         public CrossPromotionVideoPlayerTrack CrossPromotionTrack;
+        
 
         [Range(0f, 1f)]
         public float VideoNormalizedTime = 0;
+        public bool Prepared;
 
         public Action OnTrackPrepared;
         public Action OnTrackFinish;
@@ -37,17 +39,21 @@ namespace CrossPromo.VideoPlayer
             {
                 OnTrackFinish?.Invoke();
             };
-            
         }
 
 
         public IEnumerator Prepare()
         {
+            if (_videoPlayer.isPrepared)
+            {
+                OnTrackPrepared?.Invoke();
+                yield break;
+            }
+            
             _videoPlayer.Prepare();
          
             while (!_videoPlayer.isPrepared)
             {
-                Debug.Log("Preparing Index: " + CrossPromotionTrack.Id);
                 yield return null;
             }
 
@@ -56,9 +62,10 @@ namespace CrossPromo.VideoPlayer
             yield return 0;
         }
 
-        public void Play(RawImage screen)
+        public void Play(VideoPlayerScreen screen)
         {
-            screen.texture = _videoPlayer.texture;
+            //screen.texture = _videoPlayer.texture;
+            screen.SetTexture(_videoPlayer.texture);
             _videoPlayer.Play();
             _audioSource.Play();
             
@@ -74,12 +81,14 @@ namespace CrossPromo.VideoPlayer
         #if UNITY_EDITOR
         private void Update()
         {
+            Prepared = _videoPlayer.isPrepared;
+            
             if (!_videoPlayer.isPlaying) return;
             if (_videoPlayer.isPaused) return;
             VideoNormalizedTime =  (float) (_videoPlayer.time / _videoPlayer.length);
+            
         }
-
-#endif
+        #endif
 
         public void Pause()
         {
@@ -100,6 +109,16 @@ namespace CrossPromo.VideoPlayer
                 _videoPlayer.Play();
                 _audioSource.Play();
             }
+        }
+
+        public bool IsPlaying()
+        {
+            return _videoPlayer.isPlaying;
+        }
+
+        public bool IsPrepared()
+        {
+            return _videoPlayer.isPaused;
         }
     }
 }
