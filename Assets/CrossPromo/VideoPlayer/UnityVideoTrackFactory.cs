@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace CrossPromo.VideoPlayer
 {
-    public class UnityVideoPlayerFactory : VideoPlayerFactory<UnityVideoTrack>
+    public class UnityVideoTrackFactory : VideoTrackFactory<UnityVideoTrack>
     {
         private readonly List<UnityVideoTrack> _videoTracks;
         private readonly Transform _parent;
 
-        public UnityVideoPlayerFactory(int trackCount, Transform parent)
+        public UnityVideoTrackFactory(int trackCount, Transform parent)
         {
             _videoTracks = new List<UnityVideoTrack>(trackCount);
             _parent = parent;
