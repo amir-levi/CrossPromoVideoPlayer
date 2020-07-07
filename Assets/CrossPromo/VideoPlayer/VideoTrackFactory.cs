@@ -4,6 +4,6 @@ namespace CrossPromo.VideoPlayer
 {
     public abstract class VideoTrackFactory<T>
     {
-        public abstract T GetVideoTrack(CrossPromotionVideoPlayerTrack crossPromotionTrack);
+        public abstract T GetVideoTrack(VideoPlayerListItem track);
     }
 }

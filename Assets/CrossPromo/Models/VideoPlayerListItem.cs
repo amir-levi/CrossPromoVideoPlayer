@@ -3,7 +3,7 @@ using System;
 namespace CrossPromo.Models
 {
     [Serializable]
-    public class CrossPromotionVideoPlayerTrack
+    public class VideoPlayerListItem
     {
         public int Id;
         public string VideoUrl;

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CrossPromo.Models;
 using CrossPromo.VideoPlayer;
 using CrossPromo.VideoPlayer.Players;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace CrossPromo.Views
@@ -21,9 +21,9 @@ namespace CrossPromo.Views
         [SerializeField] private Sprite PauseSprite;
         [SerializeField] private VideoPlayerScreen Screen;
 
-        public Action<int, CrossPromotionVideoPlayerTrack> VideoClicked;
+        public Action<int, VideoPlayerListItem> VideoClicked;
         
-        public void Init(Type videoPlayerType,List<CrossPromotionVideoPlayerTrack> tracks)
+        public void Init(Type videoPlayerType,List<VideoPlayerListItem> tracks)
         {
             _videoPlayer = (CrossPromotionVideoPlayer) gameObject.AddComponent(videoPlayerType);
             Screen.CreateListener();
@@ -73,11 +73,12 @@ namespace CrossPromo.Views
             };
 
 
-            _videoPlayer.OnVideoClicked = track =>
+            _videoPlayer.OnVideoClicked = id =>
             {
                 Debug.Log("Moshe Cohen");
+                var playListItem = tracks.FirstOrDefault(item => item.Id == id);
                 Screen.RemoveListener();
-                VideoClicked(InstanceId, track);
+                VideoClicked(InstanceId, playListItem);
             };
 
         }

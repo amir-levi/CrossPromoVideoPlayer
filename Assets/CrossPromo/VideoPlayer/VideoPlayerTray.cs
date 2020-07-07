@@ -11,10 +11,10 @@ namespace CrossPromo.VideoPlayer
         public UnityVideoTrack NextTrack { get; private set; }
         public UnityVideoTrack PreviousTrack { get; private set; }
         private readonly VideoTrackFactory<UnityVideoTrack> _videoTrackFactory;
-        [SerializeField] private List<CrossPromotionVideoPlayerTrack> _videoPlayerTracks;
+        [SerializeField] private List<VideoPlayerListItem> _videoPlayerTracks;
         [SerializeField]private int _currentTrackIndex;
         
-        public VideoPlayerTray(List<CrossPromotionVideoPlayerTrack> videoPlayerTracks, Transform transform)
+        public VideoPlayerTray(List<VideoPlayerListItem> videoPlayerTracks, Transform transform)
         {
             _videoPlayerTracks = videoPlayerTracks;
             _videoTrackFactory = new UnityVideoTrackFactory(videoPlayerTracks.Count,transform);

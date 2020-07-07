@@ -15,21 +15,21 @@ namespace CrossPromo.VideoPlayer
             _videoTracks = new List<UnityVideoTrack>(trackCount);
             _parent = parent;
         }
-        public override UnityVideoTrack GetVideoTrack(CrossPromotionVideoPlayerTrack crossPromotionTrack)
+        public override UnityVideoTrack GetVideoTrack(VideoPlayerListItem playerListItem)
         {
-            var track = _videoTracks.FirstOrDefault(t => t.CrossPromotionTrack.Id == crossPromotionTrack.Id);
+            var track = _videoTracks.FirstOrDefault(item => item.Id == playerListItem.Id);
             if (track == null)
-                track = CreateVideoTrack(crossPromotionTrack);
+                track = CreateVideoTrack(playerListItem.Id, playerListItem.VideoUrl);
 
             return track;
         }
         
-        private UnityVideoTrack CreateVideoTrack(CrossPromotionVideoPlayerTrack crossPromotionTrack)
+        private UnityVideoTrack CreateVideoTrack(int id, string url)
         {
-            var go = new GameObject($"Video Player_{crossPromotionTrack.Id}" );
+            var go = new GameObject($"Video Player_{id}" );
             go.transform.SetParent(_parent);
             var videoTrack = go.AddComponent<UnityVideoTrack>();
-            videoTrack.Init(crossPromotionTrack);
+            videoTrack.Init(id,url);
             _videoTracks.Add(videoTrack);
             return videoTrack;
         }

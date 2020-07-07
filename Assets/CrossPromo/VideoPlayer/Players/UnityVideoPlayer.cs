@@ -11,7 +11,7 @@ namespace CrossPromo.VideoPlayer.Players
         private VideoPlayerScreen _screen;
         private VideoPlayerTray _videoPlayerTray;
         
-        public override void Init(List<CrossPromotionVideoPlayerTrack> videoPlayerTracks, VideoPlayerScreen screen)
+        public override void Init(List<VideoPlayerListItem> videoPlayerTracks, VideoPlayerScreen screen)
         {
             if (videoPlayerTracks == null || videoPlayerTracks.Count <= 0)
             {
@@ -22,7 +22,7 @@ namespace CrossPromo.VideoPlayer.Players
             _screen = screen;
             _screen.OnClick = () =>
             {
-                OnVideoClicked?.Invoke(_videoPlayerTray.CurrentTrack.CrossPromotionTrack);
+                OnVideoClicked?.Invoke(_videoPlayerTray.CurrentTrack.Id);
             };
             _videoPlayerTray = new VideoPlayerTray(videoPlayerTracks,transform);
             RunTrack(_videoPlayerTray.CurrentTrack);
