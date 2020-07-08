@@ -9,18 +9,20 @@ namespace CrossPromo.VideoPlayer
     public class VideoPlayerScreen : MonoBehaviour
     {
         [SerializeField] private RawImage Image;
-
         public Action OnClick;
-
         private EventTrigger _eventTrigger;
+
+        private Vector2 _playerSize;
         
-        void Awake()
+        public void Init(Vector2 playerSize)
         {
+            _playerSize = playerSize;
             _eventTrigger = GetComponent<EventTrigger>();
+            CreateListener();
         }
 
 
-        public void CreateListener()
+        private void CreateListener()
         {
             var entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.PointerClick;
@@ -34,7 +36,6 @@ namespace CrossPromo.VideoPlayer
         public void RemoveListener()
         {
             var entry = _eventTrigger.triggers.FirstOrDefault(t => t.eventID == EventTriggerType.PointerClick);
-            Debug.Log( (entry == null) );
             if (entry != null)
                 _eventTrigger.triggers.Remove(entry);
         }
@@ -42,6 +43,10 @@ namespace CrossPromo.VideoPlayer
         public void SetTexture(Texture texture)
         {
             Image.texture = texture;
+            var aspectRatio = _playerSize.x / _playerSize.y;
+            Image.SetNativeSize();
+            Image.GetComponent<RectTransform>().sizeDelta = aspectRatio > 1 ? new Vector2(_playerSize.y,_playerSize.y) : new Vector2(_playerSize.x,_playerSize.x);
+            Image.GetComponent<RectTransform>().localPosition = Vector3.zero;
         }
 
      

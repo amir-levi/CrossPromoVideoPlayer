@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using CrossPromo.Models;
 using CrossPromo.VideoPlayer;
+using CrossPromo.VideoPlayer.Actions;
 using CrossPromo.VideoPlayer.Players;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace CrossPromo.Views
 {
+    [ExecuteInEditMode]
     public class CrossPromotionVideoPlayerView : MonoBehaviour
     {
        public string ServerUrl;
@@ -22,18 +24,27 @@ namespace CrossPromo.Views
         [SerializeField] private Sprite PlaySprite;
         [SerializeField] private Sprite PauseSprite;
         [SerializeField] private VideoPlayerScreen Screen;
-
         public Action<int, CrossPromoVideoInfo> VideoClicked;
+
+        public VideoPlayerProperties VideoPlayerProperties;
+        public Vector2 ScreenResolution;
         
-        [SerializeField] private List<CrossPromoVideoInfo> _videosInfo = new List<CrossPromoVideoInfo>();
         
         public void Init(List<CrossPromoVideoInfo> videosInfo)
         {
-            _videosInfo = videosInfo;
-            Screen.CreateListener();
+            _videoPlayerParent = GetComponentsInChildren<RectTransform>().ToList()
+                .FirstOrDefault(t => "VideoPlayer".Equals(t.gameObject.name));
+
+            if (_videoPlayerParent == null)
+            {
+                throw new NullReferenceException("Parent GameObject in the was changed pls revert back to the defualt");
+            }
+            
+            
+            Screen.Init(_videoPlayerParent.sizeDelta);
+            
             _videoPlayer = new CrossPromoVideoPlayer(videosInfo,Screen,transform);
-           // _videoPlayer = (CrossPromotionVideoPlayer) gameObject.AddComponent(videoPlayerType);
-           // _videoPlayer.Init(tracks,Screen);
+       
             PlayButton.onClick.AddListener(() =>
             {
                 if (_videoPlayer.IsPlaying())
@@ -67,37 +78,59 @@ namespace CrossPromo.Views
                 
             });
             
-
-            _videoPlayer.OnNextVideoTrackReady += () =>
+            ((IVideoTrackPreparedAction)_videoPlayer).OnNextVideoTrackReady += () =>
             {
                 NextButton.interactable = true;
             };
             
-            _videoPlayer.OnNextVideoTrackReady += () =>
+            ((IVideoTrackPreparedAction)_videoPlayer).OnPreviousVideoTrackReady += () =>
             {
                 PreviousButton.interactable = true;
             };
 
 
-            
-       
-            _videoPlayer.OnVideoClicked = id =>
+            ((IVideoClickedAction)_videoPlayer).OnVideoClicked = id =>
             {
-                Debug.Log("Moshe Cohen");
                 var playListItem = videosInfo.FirstOrDefault(item => item.Id == id);
                 Screen.RemoveListener();
                 VideoClicked(InstanceId, playListItem);
             };
+        }
 
+
+       
+        
+        
+       
+
+        #if UNITY_EDITOR
+        private Canvas _canvas;
+        private RectTransform _videoPlayerParent;
+        private void OnEnable()
+        {
+            _canvas = GetComponentInChildren<Canvas>();
+            ScreenResolution = _canvas.pixelRect.size;
+            _videoPlayerParent = GetComponentsInChildren<RectTransform>().ToList()
+                .FirstOrDefault(t => "VideoPlayer".Equals(t.gameObject.name));
         }
         
-   
-
-        public void Dispose()
+        void Update()
         {
-            PlayButton.onClick.RemoveAllListeners();
-            NextButton.onClick.RemoveAllListeners();
-            PreviousButton.onClick.RemoveAllListeners();
+            if(Application.isPlaying) return;;
+            if(_canvas == null) return;
+
+            if (ScreenResolution != _canvas.pixelRect.position)
+                ScreenResolution = _canvas.pixelRect.size;
+
+            var x = VideoPlayerProperties.WidthInPercent * (ScreenResolution.x / _canvas.scaleFactor);
+            var y = VideoPlayerProperties.HeightInPercent * (ScreenResolution.y / _canvas.scaleFactor);
+            _videoPlayerParent.eulerAngles = VideoPlayerProperties.Pivot;
+
+            Vector2 deltaPos = _canvas.GetComponent<RectTransform>().position;
+            _videoPlayerParent.position = VideoPlayerProperties.Position + deltaPos;
+            _videoPlayerParent.sizeDelta = new Vector2(x,y);
         }
+        #endif
+ 
     }
 }
