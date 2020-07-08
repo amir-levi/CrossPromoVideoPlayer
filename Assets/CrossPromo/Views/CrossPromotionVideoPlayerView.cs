@@ -11,8 +11,10 @@ namespace CrossPromo.Views
 {
     public class CrossPromotionVideoPlayerView : MonoBehaviour
     {
+       public string ServerUrl;
+        
         [SerializeField] private int InstanceId;
-        private CrossPromotionVideoPlayer _videoPlayer;
+        private IVideoPlayer _videoPlayer;
 
         [SerializeField] private Button PlayButton;
         [SerializeField] private Button NextButton;
@@ -21,13 +23,17 @@ namespace CrossPromo.Views
         [SerializeField] private Sprite PauseSprite;
         [SerializeField] private VideoPlayerScreen Screen;
 
-        public Action<int, VideoPlayerListItem> VideoClicked;
+        public Action<int, CrossPromoVideoInfo> VideoClicked;
         
-        public void Init(Type videoPlayerType,List<VideoPlayerListItem> tracks)
+        [SerializeField] private List<CrossPromoVideoInfo> _videosInfo = new List<CrossPromoVideoInfo>();
+        
+        public void Init(List<CrossPromoVideoInfo> videosInfo)
         {
-            _videoPlayer = (CrossPromotionVideoPlayer) gameObject.AddComponent(videoPlayerType);
+            _videosInfo = videosInfo;
             Screen.CreateListener();
-            _videoPlayer.Init(tracks,Screen);
+            _videoPlayer = new CrossPromoVideoPlayer(videosInfo,Screen,transform);
+           // _videoPlayer = (CrossPromotionVideoPlayer) gameObject.AddComponent(videoPlayerType);
+           // _videoPlayer.Init(tracks,Screen);
             PlayButton.onClick.AddListener(() =>
             {
                 if (_videoPlayer.IsPlaying())
@@ -50,7 +56,6 @@ namespace CrossPromo.Views
                 PreviousButton.interactable = false;
                 NextButton.interactable = false;
                 _videoPlayer.Next();
-               
             });
             
             PreviousButton.onClick.AddListener(() =>
@@ -61,6 +66,7 @@ namespace CrossPromo.Views
                 _videoPlayer.Previous();
                 
             });
+            
 
             _videoPlayer.OnNextVideoTrackReady += () =>
             {
@@ -73,10 +79,12 @@ namespace CrossPromo.Views
             };
 
 
+            
+       
             _videoPlayer.OnVideoClicked = id =>
             {
                 Debug.Log("Moshe Cohen");
-                var playListItem = tracks.FirstOrDefault(item => item.Id == id);
+                var playListItem = videosInfo.FirstOrDefault(item => item.Id == id);
                 Screen.RemoveListener();
                 VideoClicked(InstanceId, playListItem);
             };
