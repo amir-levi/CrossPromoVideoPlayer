@@ -25,13 +25,21 @@ namespace CrossPromo.Views
         [SerializeField] private Sprite PauseSprite;
         [SerializeField] private VideoPlayerScreen Screen;
         public Action<int, CrossPromoVideoInfo> VideoClicked;
-
         public VideoPlayerProperties VideoPlayerProperties;
-        public Vector2 ScreenResolution;
-        
-        
+        private RectTransform _videoPlayerParent;
+       
+
         public void Init(List<CrossPromoVideoInfo> videosInfo)
         {
+            var canvas = GetComponentInChildren<Canvas>();
+
+            if (canvas.worldCamera == null)
+            {
+                Debug.LogError("Camera.main is not found attach a camera to CrossPromo child Canvas");
+                return;
+            }
+            
+            
             _videoPlayerParent = GetComponentsInChildren<RectTransform>().ToList()
                 .FirstOrDefault(t => "VideoPlayer".Equals(t.gameObject.name));
 
@@ -104,12 +112,23 @@ namespace CrossPromo.Views
        
 
         #if UNITY_EDITOR
+        private Vector2 _screenResolution;
         private Canvas _canvas;
-        private RectTransform _videoPlayerParent;
+       
         private void OnEnable()
         {
             _canvas = GetComponentInChildren<Canvas>();
-            ScreenResolution = _canvas.pixelRect.size;
+            if( Camera.main != null)
+            {
+                Camera.main.orthographic = true;
+                _canvas.worldCamera = Camera.main;
+            }
+            else
+            {
+                Debug.LogError("Main Camera is not present in the scene please add one");
+            }
+            
+            _screenResolution = _canvas.pixelRect.size;
             _videoPlayerParent = GetComponentsInChildren<RectTransform>().ToList()
                 .FirstOrDefault(t => "VideoPlayer".Equals(t.gameObject.name));
         }
@@ -119,11 +138,11 @@ namespace CrossPromo.Views
             if(Application.isPlaying) return;;
             if(_canvas == null) return;
 
-            if (ScreenResolution != _canvas.pixelRect.position)
-                ScreenResolution = _canvas.pixelRect.size;
+            if (_screenResolution != _canvas.pixelRect.position)
+                _screenResolution = _canvas.pixelRect.size;
 
-            var x = VideoPlayerProperties.WidthInPercent * (ScreenResolution.x / _canvas.scaleFactor);
-            var y = VideoPlayerProperties.HeightInPercent * (ScreenResolution.y / _canvas.scaleFactor);
+            var x = VideoPlayerProperties.WidthInPercent * (_screenResolution.x / _canvas.scaleFactor);
+            var y = VideoPlayerProperties.HeightInPercent * (_screenResolution.y / _canvas.scaleFactor);
             _videoPlayerParent.eulerAngles = VideoPlayerProperties.Pivot;
 
             Vector2 deltaPos = _canvas.GetComponent<RectTransform>().position;
