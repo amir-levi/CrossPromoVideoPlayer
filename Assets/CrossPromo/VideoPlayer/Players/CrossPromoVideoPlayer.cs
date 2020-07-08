@@ -6,12 +6,16 @@ using UnityEngine;
 namespace CrossPromo.VideoPlayer.Players
 {
     [Serializable]
-    public class UnityVideoPlayer : CrossPromotionVideoPlayer
+    public class CrossPromoVideoPlayer : IVideoPlayer
     {
         private VideoPlayerScreen _screen;
         private VideoPlayerTray _videoPlayerTray;
-        
-        public override void Init(List<VideoPlayerListItem> videoPlayerTracks, VideoPlayerScreen screen)
+
+        public Action OnNextVideoTrackReady { get; set; }
+        public Action OnPreviousVideoTrackReady { get; set; }
+        public Action<int> OnVideoClicked { get; set; }
+
+        public CrossPromoVideoPlayer(List<CrossPromoVideoInfo> videoPlayerTracks, VideoPlayerScreen screen, Transform transform)
         {
             if (videoPlayerTracks == null || videoPlayerTracks.Count <= 0)
             {
@@ -28,7 +32,26 @@ namespace CrossPromo.VideoPlayer.Players
             RunTrack(_videoPlayerTray.CurrentTrack);
         }
         
-        private void RunTrack(UnityVideoTrack track)
+        /*
+        public override void Init(List<VideoPlayerListItem> videoPlayerTracks, VideoPlayerScreen screen)
+        {
+            if (videoPlayerTracks == null || videoPlayerTracks.Count <= 0)
+            {
+                Debug.LogError("No Video Player Tracks - Check Data fetch from the server");
+                return;
+            }
+            
+            _screen = screen;
+            _screen.OnClick = () =>
+            {
+                OnVideoClicked?.Invoke(_videoPlayerTray.CurrentTrack.Id);
+            };
+            _videoPlayerTray = new VideoPlayerTray(videoPlayerTracks,transform);
+            RunTrack(_videoPlayerTray.CurrentTrack);
+        }
+        */
+        
+        private void RunTrack(CrossPromoVideoTrack track)
         {
             track.OnTrackPrepared = () =>
             {
@@ -38,11 +61,11 @@ namespace CrossPromo.VideoPlayer.Players
             track.OnTrackFinish = () =>
             {
                 track.Stop();
-                var nextTrack = _videoPlayerTray.GetNextTrack();
+                var nextTrack = _videoPlayerTray.RotateForward();
                 RunTrack(nextTrack);
             };
             
-            StartCoroutine(track.Prepare());
+            track.Prepare();
             _videoPlayerTray.UpdateTray(track);
 
             if (_videoPlayerTray.NextTrack != null)
@@ -51,51 +74,51 @@ namespace CrossPromo.VideoPlayer.Players
                 {
                     OnNextVideoTrackReady?.Invoke();
                 };
-                StartCoroutine(_videoPlayerTray.NextTrack.Prepare());
+                _videoPlayerTray.NextTrack.Prepare();
             }
             
             if (_videoPlayerTray.PreviousTrack != null)
             {
-
                 if (_videoPlayerTray.PreviousTrack != _videoPlayerTray.NextTrack)
                 {
                     _videoPlayerTray.PreviousTrack.OnTrackPrepared = () =>
                     {
                         OnPreviousVideoTrackReady?.Invoke();
                     };
-                    StartCoroutine(_videoPlayerTray.PreviousTrack.Prepare());
+                    _videoPlayerTray.PreviousTrack.Prepare();
                 }
             }
         }
 
-        public override void Next()
+        public void Next()
         {
             _videoPlayerTray.CurrentTrack.Stop();
-            var track = _videoPlayerTray.GetNextTrack();
+            var track = _videoPlayerTray.RotateForward();
             RunTrack(track);
         }
 
-        public override void Previous()
+        public void Previous()
         {
             _videoPlayerTray.CurrentTrack.Stop();
-            var track = _videoPlayerTray.GetPreviousTrack();
+            var track = _videoPlayerTray.RotateBackward();
             RunTrack(track);
         }
 
-        public override void Pause()
+        public void Pause()
         {
           _videoPlayerTray.CurrentTrack.Pause();
         }
 
-        public override void Resume()
+        public void Resume()
         {
            _videoPlayerTray.CurrentTrack.Resume();
         }
 
-        public override bool IsPlaying()
+        public bool IsPlaying()
         {
            return _videoPlayerTray.CurrentTrack.IsPlaying();
         }
-       
+
+      
     }
 }
