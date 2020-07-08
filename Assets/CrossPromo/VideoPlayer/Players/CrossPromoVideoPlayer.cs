@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using CrossPromo.Models;
+using CrossPromo.VideoPlayer.Actions;
 using UnityEngine;
 
 namespace CrossPromo.VideoPlayer.Players
 {
     [Serializable]
-    public class CrossPromoVideoPlayer : IVideoPlayer
+    public class CrossPromoVideoPlayer : IVideoPlayer,IVideoClickedAction,IVideoTrackPreparedAction
     {
         private VideoPlayerScreen _screen;
         private VideoPlayerTray _videoPlayerTray;
@@ -31,25 +32,6 @@ namespace CrossPromo.VideoPlayer.Players
             _videoPlayerTray = new VideoPlayerTray(videoPlayerTracks,transform);
             RunTrack(_videoPlayerTray.CurrentTrack);
         }
-        
-        /*
-        public override void Init(List<VideoPlayerListItem> videoPlayerTracks, VideoPlayerScreen screen)
-        {
-            if (videoPlayerTracks == null || videoPlayerTracks.Count <= 0)
-            {
-                Debug.LogError("No Video Player Tracks - Check Data fetch from the server");
-                return;
-            }
-            
-            _screen = screen;
-            _screen.OnClick = () =>
-            {
-                OnVideoClicked?.Invoke(_videoPlayerTray.CurrentTrack.Id);
-            };
-            _videoPlayerTray = new VideoPlayerTray(videoPlayerTracks,transform);
-            RunTrack(_videoPlayerTray.CurrentTrack);
-        }
-        */
         
         private void RunTrack(CrossPromoVideoTrack track)
         {

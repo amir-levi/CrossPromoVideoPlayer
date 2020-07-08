@@ -9,9 +9,5 @@ namespace CrossPromo.VideoPlayer.Players
         void Pause();
         void Resume();
         bool IsPlaying();
-
-        Action OnNextVideoTrackReady { get; set; }
-        Action OnPreviousVideoTrackReady { get; set; }
-        Action<int> OnVideoClicked { get; set; }
     }
 }
