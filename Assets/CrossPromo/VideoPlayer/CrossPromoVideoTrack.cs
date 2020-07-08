@@ -5,7 +5,7 @@ using UnityEngine.Video;
 
 namespace CrossPromo.VideoPlayer
 {
-    public class UnityVideoTrack : MonoBehaviour
+    public class CrossPromoVideoTrack : MonoBehaviour
     {
         public int Id;
         private UnityEngine.Video.VideoPlayer _videoPlayer;
@@ -34,7 +34,12 @@ namespace CrossPromo.VideoPlayer
         }
 
 
-        public IEnumerator Prepare()
+        public void Prepare()
+        {
+            StartCoroutine(_prepare());
+        }
+        
+        private IEnumerator _prepare()
         {
             if (_videoPlayer.isPrepared)
             {
@@ -56,7 +61,6 @@ namespace CrossPromo.VideoPlayer
 
         public void Play(VideoPlayerScreen screen)
         {
-            //screen.texture = _videoPlayer.texture;
             screen.SetTexture(_videoPlayer.texture);
             _videoPlayer.Play();
             _audioSource.Play();
