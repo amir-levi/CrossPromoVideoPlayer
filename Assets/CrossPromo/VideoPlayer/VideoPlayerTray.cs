@@ -7,49 +7,48 @@ namespace CrossPromo.VideoPlayer
     [System.Serializable]
     public class VideoPlayerTray
     {
-        public UnityVideoTrack CurrentTrack { get; private set; }
-        public UnityVideoTrack NextTrack { get; private set; }
-        public UnityVideoTrack PreviousTrack { get; private set; }
-        private readonly VideoTrackFactory<UnityVideoTrack> _videoTrackFactory;
-        [SerializeField] private List<VideoPlayerListItem> _videoPlayerTracks;
-        [SerializeField]private int _currentTrackIndex;
+        public CrossPromoVideoTrack CurrentTrack { get; private set; }
+        public CrossPromoVideoTrack NextTrack { get; private set; }
+        public CrossPromoVideoTrack PreviousTrack { get; private set; }
+        private readonly IVideoTrackFactory _videoTrackFactory;
+        private List<CrossPromoVideoInfo> _videoPlayerTracks;
+        private int _currentTrackIndex;
         
-        public VideoPlayerTray(List<VideoPlayerListItem> videoPlayerTracks, Transform transform)
+        public VideoPlayerTray(List<CrossPromoVideoInfo> videoPlayerTracks, Transform transform)
         {
             _videoPlayerTracks = videoPlayerTracks;
-            _videoTrackFactory = new UnityVideoTrackFactory(videoPlayerTracks.Count,transform);
-            CurrentTrack = _videoTrackFactory.GetVideoTrack(_videoPlayerTracks[_currentTrackIndex]);
+            _videoTrackFactory = new CrossPromoVideoTrackFactory(videoPlayerTracks.Count,transform);
+            CurrentTrack =  _videoTrackFactory.GetVideoTrack(_videoPlayerTracks[_currentTrackIndex]) as CrossPromoVideoTrack;
         }
 
-        public UnityVideoTrack GetNextTrack()
+        public CrossPromoVideoTrack RotateForward()
         {
             _currentTrackIndex = (_currentTrackIndex + _videoPlayerTracks.Count + 1) % _videoPlayerTracks.Count;
             return NextTrack;
         }
 
-        public UnityVideoTrack GetPreviousTrack()
+        public CrossPromoVideoTrack RotateBackward()
         {
             _currentTrackIndex = (_currentTrackIndex + _videoPlayerTracks.Count - 1) % _videoPlayerTracks.Count;
             return PreviousTrack;
         }
 
-        public void UpdateTray(UnityVideoTrack currentTrack)
+        public void UpdateTray(CrossPromoVideoTrack currentTrack)
         {
             CurrentTrack = currentTrack;
 
             if (_videoPlayerTracks.Count == 2)
             {
                 var nextIndex = (_currentTrackIndex + _videoPlayerTracks.Count + 1) % _videoPlayerTracks.Count;
-                NextTrack = PreviousTrack = _videoTrackFactory.GetVideoTrack(_videoPlayerTracks[nextIndex]);
+                NextTrack = PreviousTrack = _videoTrackFactory.GetVideoTrack(_videoPlayerTracks[nextIndex]) as CrossPromoVideoTrack;
                 
             }
             else if (_videoPlayerTracks.Count > 2)
             {
                 var nextIndex = (_currentTrackIndex + _videoPlayerTracks.Count + 1) % _videoPlayerTracks.Count;
-                NextTrack = _videoTrackFactory.GetVideoTrack(_videoPlayerTracks[nextIndex]);
+                NextTrack = _videoTrackFactory.GetVideoTrack(_videoPlayerTracks[nextIndex]) as CrossPromoVideoTrack;
                 var prevIndex = (_currentTrackIndex + _videoPlayerTracks.Count - 1) % _videoPlayerTracks.Count;
-                Debug.Log(prevIndex);
-                PreviousTrack = _videoTrackFactory.GetVideoTrack(_videoPlayerTracks[prevIndex]);
+                PreviousTrack = _videoTrackFactory.GetVideoTrack(_videoPlayerTracks[prevIndex]) as CrossPromoVideoTrack;
             }
             else
             {
