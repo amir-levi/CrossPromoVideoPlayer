@@ -17,8 +17,6 @@ namespace CrossPromo.Controllers
             {
                 var trackingUrl = track.TrackingUrl;
                 var clickUrl = track.ClickUrl;
-            
-                Debug.Log($"instanceId: {instanceId} trackingUrl: {trackingUrl}  clickUrl: {clickUrl} ");
                 
                 SendCrossPromoRequest(instanceId,trackingUrl,clickUrl);
             };

@@ -55,8 +55,6 @@ namespace CrossPromo.VideoPlayer
             }
 
             OnTrackPrepared?.Invoke();
-
-            yield return 0;
         }
 
         public void Play(VideoPlayerScreen screen)
@@ -64,8 +62,6 @@ namespace CrossPromo.VideoPlayer
             screen.SetTexture(_videoPlayer.texture);
             _videoPlayer.Play();
             _audioSource.Play();
-            
-            
         }
 
         public void Stop()
