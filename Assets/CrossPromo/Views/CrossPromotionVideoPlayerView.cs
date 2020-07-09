@@ -16,7 +16,7 @@ namespace CrossPromo.Views
        public string ServerUrl;
         
         [SerializeField] private int InstanceId;
-        private IVideoPlayer _videoPlayer;
+        [SerializeField]private CrossPromoVideoPlayer _videoPlayer;
 
         [SerializeField] private Button PlayButton;
         [SerializeField] private Button NextButton;

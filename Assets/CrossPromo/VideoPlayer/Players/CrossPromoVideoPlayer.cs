@@ -10,7 +10,7 @@ namespace CrossPromo.VideoPlayer.Players
     public class CrossPromoVideoPlayer : IVideoPlayer,IVideoClickedAction,IVideoTrackPreparedAction
     {
         private VideoPlayerScreen _screen;
-        private VideoPlayerTray _videoPlayerTray;
+        [SerializeField]private VideoPlayerTray _videoPlayerTray;
 
         public Action OnNextVideoTrackReady { get; set; }
         public Action OnPreviousVideoTrackReady { get; set; }
@@ -77,6 +77,8 @@ namespace CrossPromo.VideoPlayer.Players
             _videoPlayerTray.CurrentTrack.Stop();
             var track = _videoPlayerTray.RotateForward();
             RunTrack(track);
+            
+            _videoPlayerTray.Rotate(1);
         }
 
         public void Previous()
@@ -84,6 +86,8 @@ namespace CrossPromo.VideoPlayer.Players
             _videoPlayerTray.CurrentTrack.Stop();
             var track = _videoPlayerTray.RotateBackward();
             RunTrack(track);
+            
+            _videoPlayerTray.Rotate(-1);
         }
 
         public void Pause()
