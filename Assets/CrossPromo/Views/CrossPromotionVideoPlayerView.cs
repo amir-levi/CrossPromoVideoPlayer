@@ -47,8 +47,7 @@ namespace CrossPromo.Views
             {
                 throw new NullReferenceException("Parent GameObject in the was changed pls revert back to the defualt");
             }
-            
-            
+
             Screen.Init(_videoPlayerParent.sizeDelta);
             
             _videoPlayer = new CrossPromoVideoPlayer(videosInfo,Screen,transform);
@@ -69,32 +68,42 @@ namespace CrossPromo.Views
                 }
             });
             
-            NextButton.onClick.AddListener(() =>
-            {
-                PlayButton.image.sprite = PlaySprite;
-                PreviousButton.interactable = false;
-                NextButton.interactable = false;
-                _videoPlayer.Next();
-            });
             
-            PreviousButton.onClick.AddListener(() =>
+            if(videosInfo .Count > 1)
             {
-                PlayButton.image.sprite = PlaySprite;
-                PreviousButton.interactable = false;
+                NextButton.onClick.AddListener(() =>
+                {
+                    NextButton.interactable = false;
+                    PreviousButton.interactable = false;
+                    PlayButton.image.sprite = PlaySprite;
+                    _videoPlayer.Next();
+                });
+
+                PreviousButton.onClick.AddListener(() =>
+                {
+                    NextButton.interactable = false;
+                    PreviousButton.interactable = false;
+                    PlayButton.image.sprite = PlaySprite;
+                    _videoPlayer.Previous();
+
+                });
+            }
+            else
+            {
                 NextButton.interactable = false;
-                _videoPlayer.Previous();
-                
-            });
+                PreviousButton.interactable = false;
+            }
             
             ((IVideoTrackPreparedAction)_videoPlayer).OnNextVideoTrackReady += () =>
             {
                 NextButton.interactable = true;
-            };
-            
-            ((IVideoTrackPreparedAction)_videoPlayer).OnPreviousVideoTrackReady += () =>
-            {
                 PreviousButton.interactable = true;
             };
+            
+            // ((IVideoTrackPreparedAction)_videoPlayer).OnPreviousVideoTrackReady += () =>
+            // {
+            //     PreviousButton.interactable = true;
+            // };
 
 
             ((IVideoClickedAction)_videoPlayer).OnVideoClicked = id =>

@@ -17,7 +17,7 @@ namespace CrossPromo.VideoPlayer
             Id = id;
             _videoPlayer = gameObject.AddComponent<UnityEngine.Video.VideoPlayer>();
             
-            _videoPlayer.isLooping = true;
+            _videoPlayer.isLooping = false;
             _videoPlayer.playOnAwake = false;
             _videoPlayer.source = VideoSource.Url;
             _videoPlayer.url = url;

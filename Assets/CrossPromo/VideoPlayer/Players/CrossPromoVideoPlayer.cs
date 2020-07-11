@@ -27,82 +27,66 @@ namespace CrossPromo.VideoPlayer.Players
             _screen = screen;
             _screen.OnClick = () =>
             {
-                OnVideoClicked?.Invoke(_videoPlayerTray.CurrentTrack.Id);
+                OnVideoClicked?.Invoke(_videoPlayerTray.GetCurrentTrack().Id);
             };
             _videoPlayerTray = new VideoPlayerTray(videoPlayerTracks,transform);
-            RunTrack(_videoPlayerTray.CurrentTrack);
+            RunTrack(_videoPlayerTray.GetCurrentTrack());
         }
         
         private void RunTrack(CrossPromoVideoTrack track)
         {
             track.OnTrackPrepared = () =>
             {
-                track.Play(_screen);
+                Debug.Log($"track: {track}  CurrentTrack: {_videoPlayerTray.GetCurrentTrack()}");
+                if(track == _videoPlayerTray.GetCurrentTrack())
+                    track.Play(_screen);
             };
 
             track.OnTrackFinish = () =>
             {
                 track.Stop();
-                var nextTrack = _videoPlayerTray.RotateForward();
-                RunTrack(nextTrack);
+               _videoPlayerTray.Rotate(-1);
+               RunTrack(_videoPlayerTray.GetCurrentTrack());
+               
             };
-            
             track.Prepare();
-            _videoPlayerTray.UpdateTray(track);
+            _videoPlayerTray.PrepareCachedTracks(() =>
+            {
+                OnNextVideoTrackReady?.Invoke();
+            });
 
-            if (_videoPlayerTray.NextTrack != null)
-            {
-                _videoPlayerTray.NextTrack.OnTrackPrepared = () =>
-                {
-                    OnNextVideoTrackReady?.Invoke();
-                };
-                _videoPlayerTray.NextTrack.Prepare();
-            }
-            
-            if (_videoPlayerTray.PreviousTrack != null)
-            {
-                if (_videoPlayerTray.PreviousTrack != _videoPlayerTray.NextTrack)
-                {
-                    _videoPlayerTray.PreviousTrack.OnTrackPrepared = () =>
-                    {
-                        OnPreviousVideoTrackReady?.Invoke();
-                    };
-                    _videoPlayerTray.PreviousTrack.Prepare();
-                }
-            }
+          
         }
 
         public void Next()
         {
-            _videoPlayerTray.CurrentTrack.Stop();
-            var track = _videoPlayerTray.RotateForward();
-            RunTrack(track);
-            
-            _videoPlayerTray.Rotate(1);
+            var tempTrack = _videoPlayerTray.GetCurrentTrack();
+            _videoPlayerTray.Rotate(-1);
+            RunTrack(_videoPlayerTray.GetCurrentTrack());
+            tempTrack.Stop();
         }
 
         public void Previous()
         {
-            _videoPlayerTray.CurrentTrack.Stop();
-            var track = _videoPlayerTray.RotateBackward();
-            RunTrack(track);
-            
-            _videoPlayerTray.Rotate(-1);
+            var tempTrack = _videoPlayerTray.GetCurrentTrack();
+            _videoPlayerTray.Rotate(1);
+            RunTrack(_videoPlayerTray.GetCurrentTrack());
+            tempTrack.Stop();
         }
 
         public void Pause()
         {
-          _videoPlayerTray.CurrentTrack.Pause();
+          _videoPlayerTray.GetCurrentTrack().Pause();
         }
 
         public void Resume()
         {
-           _videoPlayerTray.CurrentTrack.Resume();
+           _videoPlayerTray.GetCurrentTrack().Resume();
         }
 
         public bool IsPlaying()
         {
-           return _videoPlayerTray.CurrentTrack.IsPlaying();
+           return _videoPlayerTray.GetCurrentTrack().IsPlaying();
         }
 
       
