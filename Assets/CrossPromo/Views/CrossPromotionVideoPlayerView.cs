@@ -16,7 +16,7 @@ namespace CrossPromo.Views
        public string ServerUrl;
         
         [SerializeField] private int InstanceId;
-        [SerializeField]private CrossPromoVideoPlayer _videoPlayer;
+        private IVideoPlayer _videoPlayer;
 
         [SerializeField] private Button PlayButton;
         [SerializeField] private Button NextButton;
@@ -27,7 +27,7 @@ namespace CrossPromo.Views
         public Action<int, CrossPromoVideoInfo> VideoClicked;
         public VideoPlayerProperties VideoPlayerProperties;
         private RectTransform _videoPlayerParent;
-       
+
 
         public void Init(List<CrossPromoVideoInfo> videosInfo)
         {
@@ -45,7 +45,7 @@ namespace CrossPromo.Views
 
             if (_videoPlayerParent == null)
             {
-                throw new NullReferenceException("Parent GameObject in the was changed pls revert back to the defualt");
+                throw new NullReferenceException("Parent GameObject in the was changed pls revert back to the default");
             }
 
             Screen.Init(_videoPlayerParent.sizeDelta);
@@ -73,16 +73,12 @@ namespace CrossPromo.Views
             {
                 NextButton.onClick.AddListener(() =>
                 {
-                    NextButton.interactable = false;
-                    PreviousButton.interactable = false;
                     PlayButton.image.sprite = PlaySprite;
                     _videoPlayer.Next();
                 });
 
                 PreviousButton.onClick.AddListener(() =>
                 {
-                    NextButton.interactable = false;
-                    PreviousButton.interactable = false;
                     PlayButton.image.sprite = PlaySprite;
                     _videoPlayer.Previous();
 
@@ -93,18 +89,6 @@ namespace CrossPromo.Views
                 NextButton.interactable = false;
                 PreviousButton.interactable = false;
             }
-            
-            ((IVideoTrackPreparedAction)_videoPlayer).OnNextVideoTrackReady += () =>
-            {
-                NextButton.interactable = true;
-                PreviousButton.interactable = true;
-            };
-            
-            // ((IVideoTrackPreparedAction)_videoPlayer).OnPreviousVideoTrackReady += () =>
-            // {
-            //     PreviousButton.interactable = true;
-            // };
-
 
             ((IVideoClickedAction)_videoPlayer).OnVideoClicked = id =>
             {
@@ -114,11 +98,6 @@ namespace CrossPromo.Views
             };
         }
 
-
-       
-        
-        
-       
 
         #if UNITY_EDITOR
         private Vector2 _screenResolution;
@@ -144,7 +123,7 @@ namespace CrossPromo.Views
         
         void Update()
         {
-            if(Application.isPlaying) return;;
+            if(Application.isPlaying) return;
             if(_canvas == null) return;
 
             if (_screenResolution != _canvas.pixelRect.position)
