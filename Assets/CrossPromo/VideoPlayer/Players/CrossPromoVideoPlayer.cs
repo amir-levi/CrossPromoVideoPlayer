@@ -7,13 +7,15 @@ using UnityEngine;
 namespace CrossPromo.VideoPlayer.Players
 {
     [Serializable]
-    public class CrossPromoVideoPlayer : IVideoPlayer,IVideoClickedAction,IVideoTrackPreparedAction
+    public class CrossPromoVideoPlayer : IVideoPlayer,IVideoClickedAction
     {
         private VideoPlayerScreen _screen;
-        [SerializeField]private VideoPlayerTray _videoPlayerTray;
+        private VideoPlayerTray _videoPlayerTray;
 
-        public Action OnNextVideoTrackReady { get; set; }
-        public Action OnPreviousVideoTrackReady { get; set; }
+        private CrossPromoVideoTrack _currentTrack;
+        private CrossPromoVideoTrack _previousTrack;
+        
+
         public Action<int> OnVideoClicked { get; set; }
 
         public CrossPromoVideoPlayer(List<CrossPromoVideoInfo> videoPlayerTracks, VideoPlayerScreen screen, Transform transform)
@@ -30,48 +32,47 @@ namespace CrossPromo.VideoPlayer.Players
                 OnVideoClicked?.Invoke(_videoPlayerTray.GetCurrentTrack().Id);
             };
             _videoPlayerTray = new VideoPlayerTray(videoPlayerTracks,transform);
-            RunTrack(_videoPlayerTray.GetCurrentTrack());
+            _currentTrack = _videoPlayerTray.GetCurrentTrack();
+            RunTrack();
         }
         
-        private void RunTrack(CrossPromoVideoTrack track)
+        private void RunTrack()
         {
-            track.OnTrackPrepared = () =>
+            
+            _currentTrack.OnTrackPrepared = () =>
             {
-                Debug.Log($"track: {track}  CurrentTrack: {_videoPlayerTray.GetCurrentTrack()}");
-                if(track == _videoPlayerTray.GetCurrentTrack())
-                    track.Play(_screen);
+                _currentTrack.Play(_screen);
             };
-
-            track.OnTrackFinish = () =>
-            {
-                track.Stop();
-               _videoPlayerTray.Rotate(-1);
-               RunTrack(_videoPlayerTray.GetCurrentTrack());
-               
-            };
-            track.Prepare();
-            _videoPlayerTray.PrepareCachedTracks(() =>
-            {
-                OnNextVideoTrackReady?.Invoke();
-            });
-
+            
+            _currentTrack.OnTrackFinish = Next;
+            _currentTrack.Prepare();
+            
           
         }
 
         public void Next()
         {
-            var tempTrack = _videoPlayerTray.GetCurrentTrack();
+            _previousTrack = _currentTrack;
             _videoPlayerTray.Rotate(-1);
-            RunTrack(_videoPlayerTray.GetCurrentTrack());
-            tempTrack.Stop();
+            _currentTrack = _videoPlayerTray.GetCurrentTrack();
+            
+            if(_previousTrack != _currentTrack)
+                _previousTrack.Stop();
+            
+            RunTrack(); 
         }
 
         public void Previous()
         {
-            var tempTrack = _videoPlayerTray.GetCurrentTrack();
+            _previousTrack = _currentTrack;
             _videoPlayerTray.Rotate(1);
-            RunTrack(_videoPlayerTray.GetCurrentTrack());
-            tempTrack.Stop();
+            _currentTrack = _videoPlayerTray.GetCurrentTrack();
+
+            if(_previousTrack != _currentTrack)
+                _previousTrack.Stop();
+            
+            RunTrack();
+            
         }
 
         public void Pause()
