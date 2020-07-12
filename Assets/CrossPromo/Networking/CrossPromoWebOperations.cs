@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using CrossPromo.Extensions;
 using CrossPromo.Models;
@@ -14,6 +13,7 @@ namespace CrossPromo.Networking
 {
     public static class CrossPromoWebOperations
     {
+        
         private static HttpClientHandler _clientHandler = new HttpClientHandler();
         public static async Task<List<CrossPromoVideoInfo>> FetchVideoPlaylist(string url, Action<string> onFail)
         {
@@ -50,6 +50,7 @@ namespace CrossPromo.Networking
             {
                 onFail(e.Message);
             }
+            
             
             return playList;
         }

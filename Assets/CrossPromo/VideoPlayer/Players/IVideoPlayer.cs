@@ -1,5 +1,3 @@
-using System;
-
 namespace CrossPromo.VideoPlayer.Players
 {
     public interface IVideoPlayer

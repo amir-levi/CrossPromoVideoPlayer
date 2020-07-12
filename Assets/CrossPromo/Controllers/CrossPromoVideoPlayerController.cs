@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using CrossPromo.Networking;
 using CrossPromo.Views;
 using UnityEngine;
