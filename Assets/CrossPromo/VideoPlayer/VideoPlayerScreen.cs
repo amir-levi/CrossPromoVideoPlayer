@@ -43,9 +43,22 @@ namespace CrossPromo.VideoPlayer
         public void SetTexture(Texture texture)
         {
             Image.texture = texture;
-            var aspectRatio = _playerSize.x / _playerSize.y;
             Image.SetNativeSize();
-            Image.GetComponent<RectTransform>().sizeDelta = aspectRatio > 1 ? new Vector2(_playerSize.y,_playerSize.y) : new Vector2(_playerSize.x,_playerSize.x);
+            var aspectRatio = _playerSize.x / _playerSize.y;
+            var textureAspectRatio = texture.width / texture.height;
+
+            if (aspectRatio > 1)
+            {
+                Image.GetComponent<RectTransform>().sizeDelta = new Vector2(_playerSize.y * textureAspectRatio, _playerSize.y);
+            }
+            else
+            {
+                Image.GetComponent<RectTransform>().sizeDelta = new Vector2(_playerSize.x , _playerSize.x* textureAspectRatio);
+            }
+            
+            
+           
+            
             Image.GetComponent<RectTransform>().localPosition = Vector3.zero;
         }
 
